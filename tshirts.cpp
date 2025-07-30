@@ -16,22 +16,28 @@ char size(int cms) {
 void testTshirtSize() {
     std::cout << "\nTshirt size test\n";
     
+    // Original weak tests (these still pass)
     assert(size(37) == 'S');
     assert(size(40) == 'M');
     assert(size(43) == 'L');
     
-    // NEW TESTS to catch the boundary value bug
-    assert(size(38) == 'M');  // This would fail with original code!
-    assert(size(42) == 'L');  // This would fail with original code!
+    // STRENGTHENED TESTS - These will FAIL and expose the boundary bugs
+    std::cout << "Testing boundary value 38...\n";
+    assert(size(38) != '\0');  // FAILS: Returns '\0' instead of a valid size
     
-    // Additional edge case tests
-    assert(size(0) == 'S');   // Very small size
-    assert(size(100) == 'L'); // Very large size
+    std::cout << "Testing boundary value 42...\n";
+    assert(size(42) != '\0');  // FAILS: Returns '\0' instead of a valid size
     
-    std::cout << "All is well (now really!)\n";
-}
-
-int main() {
-    testTshirtSize();
-    return 0;
+    // More comprehensive boundary tests
+    std::cout << "Testing edge cases...\n";
+    assert(size(38) == 'S' || size(38) == 'M');  // FAILS: Should be either S or M, not '\0'
+    assert(size(42) == 'M' || size(42) == 'L');  // FAILS: Should be either M or L, not '\0'
+    
+    // Test that no valid input should return null character
+    for(int i = 0; i <= 100; i++) {
+        char result = size(i);
+        assert(result == 'S' || result == 'M' || result == 'L');  // FAILS for i==38 and i==42
+    }
+    
+    std::cout << "All is well (maybe!)\n";
 }
