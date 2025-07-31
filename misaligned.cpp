@@ -2,7 +2,6 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include <cassert>
 
 const char* majorColor[] = {"White", "Red", "Black", "Yellow", "Violet"};
 const char* minorColor[] = {"Blue", "Orange", "Green", "Brown", "Slate"};
@@ -31,18 +30,28 @@ int printColorMap() {
     return colorMap.size();
 }
 
-void testPrintColorMap() {
-    std::cout << "\nPrint color map test\n";
+void testPrintColorMapWithLogging() {
+    std::cout << "\nPrint color map test with logging\n";
     auto colorMap = generateColorMap();
-    assert(colorMap.size() == 25);
+    bool allCorrect = true;
 
-    // Stronger test: check specific entries
-    assert(colorMap[0] == "0 | White | Blue");
-    assert(colorMap[4] == "4 | White | Slate");
-    assert(colorMap[5] == "5 | Red | Blue");
-    assert(colorMap[9] == "9 | Red | Slate");
-    assert(colorMap[10] == "10 | Black | Blue");
-    assert(colorMap[24] == "24 | Violet | Slate");
+    for (int i = 0; i < 25; ++i) {
+        int majorIndex = i / 5;
+        int minorIndex = i % 5;
+        std::ostringstream expected;
+        expected << i << " | " << majorColor[majorIndex] << " | " << minorColor[minorIndex];
 
-    std::cout << "All is well (maybe!)\n";
+        if (colorMap[i] != expected.str()) {
+            std::cout << "Mismatch at index " << i << ":\n";
+            std::cout << "  Expected: " << expected.str() << "\n";
+            std::cout << "  Actual:   " << colorMap[i] << "\n";
+            allCorrect = false;
+        }
+    }
+
+    if (allCorrect) {
+        std::cout << "All entries are correct (unexpected!)\n";
+    } else {
+        std::cout << "Some entries are incorrect. Bug exposed!\n";
+    }
 }
